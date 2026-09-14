@@ -837,6 +837,22 @@ h1, h2, h3, p {
   height: auto;
 }
 
+/* Optional extra screenshots for a work item that spans multiple sites/pages
+   (e.g. a project with both a corporate site and a separate event site). */
+.work-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin: -32px 0 56px;
+}
+
+.work-gallery img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  display: block;
+}
+
 .work-body {
   display: grid;
   grid-template-columns: 1fr 260px;

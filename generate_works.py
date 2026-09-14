@@ -201,6 +201,28 @@ WORKS = [
         "duration": "約２週間程度",
         "urls": [],
     },
+    {
+        "slug": "ays-osaka",
+        "title": "あいす・おおさか",
+        "badge": "Website制作",
+        "tags": ["Website", "design", "cording", "responsive", "wordpress"],
+        "img": "ays-osaka.webp",
+        "alt": "あいす・おおさか",
+        "desc": [
+            "一般財団法人 大阪市青少年活動協会「あいす・おおさか」の、協会公式サイトとキャンプ申込み用のイベントサイトの2サイトを制作。デザインとコーディングを担当。",
+            "1957年発足の青少年活動団体としての歴史と信頼感を伝える協会公式サイトと、こどもキャンプ・ファミリーキャンプ・アウトドアクラブなど数多くのプログラムを探して申し込みやすく整理したイベントサイトとで、役割の異なる2サイト構成にしました。自然の中でこどもたちがのびのびと活動する写真を中心に、あたたかみと安心感が伝わるデザインに仕上げています。",
+        ],
+        "tools": "Illustrator / Figma",
+        "coding": "HTML / CSS / WordPress",
+        "duration": "約１ヶ月程度",
+        "url_items": [
+            {"label": "協会公式サイト", "url": "https://ays-osaka.jp/"},
+            {"label": "イベントサイト（キャンプ申込み）", "url": "https://camp.ays-osaka.jp/"},
+        ],
+        "extra_images": [
+            {"img": "ays-osaka-camp.webp", "alt": "あいす・おおさか イベントサイト"},
+        ],
+    },
 ]
 
 TEMPLATE = """<!DOCTYPE html>
@@ -260,7 +282,7 @@ TEMPLATE = """<!DOCTYPE html>
         <div class="work-image reveal">
           <img src="../assets/images/{img}" alt="{alt}" loading="eager">
         </div>
-
+{extra_images_html}
         <div class="work-body">
           <div class="work-desc reveal">
 {desc_html}
@@ -324,18 +346,40 @@ def build():
 
         coding_row = f"<br>{esc(w['coding'])}" if w.get("coding") else ""
 
-        urls = w.get("urls") or []
-        if urls:
-            label = w.get("url_label")
+        url_items = w.get("url_items")
+        if url_items:
             items = []
-            for j, u in enumerate(urls):
-                text = f"{esc(label)} - {esc(u)}" if (label and j == 0) else esc(u)
+            for it in url_items:
+                u = it["url"]
+                label = it.get("label")
+                text = f"{esc(label)} - {esc(u)}" if label else esc(u)
                 items.append(
                     f'              <dd><a class="live-link" href="{esc(u)}" target="_blank" rel="noopener">{text}</a></dd>'
                 )
             urls_html = '              <dt>URL</dt>\n' + "\n".join(items)
         else:
-            urls_html = ""
+            urls = w.get("urls") or []
+            if urls:
+                label = w.get("url_label")
+                items = []
+                for j, u in enumerate(urls):
+                    text = f"{esc(label)} - {esc(u)}" if (label and j == 0) else esc(u)
+                    items.append(
+                        f'              <dd><a class="live-link" href="{esc(u)}" target="_blank" rel="noopener">{text}</a></dd>'
+                    )
+                urls_html = '              <dt>URL</dt>\n' + "\n".join(items)
+            else:
+                urls_html = ""
+
+        extra_images = w.get("extra_images") or []
+        if extra_images:
+            imgs_html = "\n".join(
+                f'            <img src="../assets/images/{esc(ei["img"])}" alt="{esc(ei.get("alt", ""))}" loading="lazy">'
+                for ei in extra_images
+            )
+            extra_images_html = f'        <div class="work-gallery reveal">\n{imgs_html}\n        </div>\n'
+        else:
+            extra_images_html = ""
 
         prev_w = WORKS[(i - 1) % n]
         next_w = WORKS[(i + 1) % n]
@@ -346,6 +390,7 @@ def build():
             img=w["img"],
             alt=esc(w["alt"]),
             tags_html=tags_html,
+            extra_images_html=extra_images_html,
             desc_html=desc_html,
             tools=esc(w["tools"]),
             coding_row=coding_row,
